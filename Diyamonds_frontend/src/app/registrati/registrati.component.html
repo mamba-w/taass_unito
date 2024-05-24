@@ -1,0 +1,39 @@
+<app-menu></app-menu>
+
+<div class="card mb-4">
+    <form #infoUtenteForm="ngForm" (ngSubmit)="completaLaRegistrazione(infoUtenteForm.value)">
+      <h3 class="h6 bold mb-4"> Ciao {{nome}} {{cognome}} </h3>
+      <h3 class="h6 bold mb-4"> Email : {{email}} </h3>
+      <h3 class="h6 mb-4"> Compila il form qui sotto per completare la registrazione </h3>
+      <div class="form-outline mb-3">
+        <label class="form-label" for="form3Example3">Username: </label>
+        <input type="text" class="form-control" name="username" ngModel />
+      </div>
+
+      <div class="form-outline mb-3">
+        <label class="form-label" for="form3Example3">Password: </label>
+        <input type="password" class="form-control" name="password" ngModel />
+      </div>
+
+      <div class="form-outline mb-3">
+        <label class="form-label" for="form3Example3">Numero di telefono: </label>
+        <input type="number" class="form-control" name="telefono" ngModel />
+      </div>
+
+      <div class="form-outline  mb-3">
+        <label class="form-label" >Sei un venditore o un fornitore? </label>
+        <select   name="isVenditoreFornitore" ngModel>
+          <option value="" selected disabled >Choose...</option>
+          <option value="0">Nessuno </option>
+          <option value="1">Venditore</option>
+          <option value="2">Fornitore </option>
+        </select>
+      </div>
+
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary btn-block mb-4">Completa la registrazione</button>
+    </form>
+  </div>
+
+

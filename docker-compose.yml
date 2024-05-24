@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    image: jerik99/diyamonds_taass-eureka-server
+    #build: eurekaServer
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    labels:
+      kompose.service.type: NodePort
+      kompose.service.nodeport.port: "30001"
+  dbpostgresql:
+    container_name: postgres
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      restart: unless-stopped
+  app:
+    image: jerik99/diyamonds_taass-app
+    #build: ./diyamonds_backend_1
+    container_name: diyamonds_backend_1
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dbpostgresql
+      - eureka-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  dbpostgresql2:
+    container_name: postgres_2
+    image: "postgres"
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-data2:/var/lib/postgresql/data
+    depends_on:
+      - app
+      - dbpostgresql
+      - eureka-server
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      restart: unless-stopped
+  app2:
+    image: jerik99/diyamonds_taass-app2
+    #build: ./diyamonds_backend_2
+    container_name: diyamonds_backend_2
+    ports:
+      - "8082:8082"
+    depends_on:
+      - app
+      - dbpostgresql
+      - dbpostgresql2
+      - eureka-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql2:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  rabbitmq3:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    ports:
+       #AMQP protocol port
+      - "5672:5672"
+       #HTTP management UI
+      - "15672:15672"
+  api-gateway:
+    image: jerik99/diyamonds_taass-api-gateway
+    #build: apiGateway
+    container_name: api-gateway
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+    labels:
+      kompose.service.type: NodePort
+      kompose.service.nodeport.port: "30000"
+
+
+  ui:
+    image: tancredim/diyamonds_taass-ui
+    #build: ./Diyamonds_frontend
+    container_name: diyamonds_frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - app
+      - app2
+    labels:
+      kompose.service.type: NodePort
+      kompose.service.nodeport.port: "30002"
+volumes:
+  db-data:
+  db-data2:
+
+# docker-compose build && docker-compose up
+
