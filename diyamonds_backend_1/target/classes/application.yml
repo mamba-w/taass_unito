@@ -19,8 +19,8 @@ spring:
             client:
                 registration:
                     google:
-                        client-id: 220700435139-dkcp03633i6unre49ubalkamq2mipfci.apps.googleusercontent.com
-                        client-secret: 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
+                        client-id: 
+                        client-secret: 
         user:
             name: admin
             password: admin
